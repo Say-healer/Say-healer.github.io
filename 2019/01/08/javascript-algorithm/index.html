@@ -8,12 +8,12 @@
   
   
   
-  <title>animation | Healer</title>
+  <title>常见的js算法 | Healer</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Hexo, theme-bmw, Healer">
+    <meta name="keywords" content="JavaScript,">
   
 
  
@@ -195,17 +195,17 @@
 
 <div class="post">
   <h1 class="article-title">
-    <span>animation</span>
+    <span>常见的js算法</span>
   </h1>
   <div class="article-top-meta">
     <span>
       发布 : 
-      2019-01-09
+      2019-01-08
     </span>
     
     
       <span>
-        浏览 : <span class="article-timer" data-identity="animation"></span>
+        浏览 : <span class="article-timer" data-identity="javascript-algorithm"></span>
       </span>
     
   </div>
@@ -214,20 +214,10 @@
 
   <div class="article-content">
     <div class="markdown-body">
-      <h2 id="animation-参数"><a href="#animation-参数" class="headerlink" title="animation 参数"></a>animation 参数</h2><p>css animation 属性是如下属性的一个简写属性形式：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">animation-name:none // 动画名称</span><br><span class="line">animation-duration: 0s // 时间</span><br><span class="line">animation-timing-function: ease // 执行节奏，一个或多个</span><br><span class="line">animation-delay: 0s // 延迟</span><br><span class="line">animation-iteration-count: 1 // </span><br><span class="line">animation-direction: normal  //</span><br><span class="line">animation-fill-mode: none  //</span><br><span class="line">animation-play-state:running //</span><br></pre></td></tr></table></figure>
-<p>一个个详细解释<br>animation-name 属性可以指定一些列的动画，可以由<code>@keyframes</code>定义动画的序列，如果由多个动画可以用逗号隔开</p>
-<p><code>animation-timing-function</code> 有以下默认的值可以用：</p>
-<ul>
-<li>ease</li>
-<li>ease-in</li>
-<li>ease-out</li>
-<li>ease-in-out</li>
-<li>linear</li>
-<li>step-start</li>
-<li>step-end</li>
-</ul>
-
+      <p></p>
+<h3 id="1-比较版本号"><a href="#1-比较版本号" class="headerlink" title="1.比较版本号"></a>1.比较版本号</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 比较版本号的大小</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 返回值:</span></span><br><span class="line"><span class="comment"> * v1大于v2则返回1，</span></span><br><span class="line"><span class="comment"> * v1小于v2则返回-1，</span></span><br><span class="line"><span class="comment"> * v1等于v2则返回0</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Example:</span></span><br><span class="line"><span class="comment"> * versionCompare('1.1', '1.2') =&gt; -1</span></span><br><span class="line"><span class="comment"> * versionCompare('1.1', '1.1') =&gt;  0</span></span><br><span class="line"><span class="comment"> * versionCompare('1.2', '1.1') =&gt;  1</span></span><br><span class="line"><span class="comment"> * versionCompare('2.23.3', '2.22.3') =&gt; 1</span></span><br><span class="line"><span class="comment"> * versionCompare(1.1, 1.2) =&gt; -1</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param v1 版本号1</span></span><br><span class="line"><span class="comment"> * @param v2 版本号2</span></span><br><span class="line"><span class="comment"> * @returns &#123;number&#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">versionCompare</span>(<span class="params">v1, v2</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(v1 == <span class="literal">undefined</span> || v2 == <span class="literal">undefined</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"Error:v1, v2 undefined"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> v1_Array = <span class="built_in">String</span>(v1).split(<span class="string">'.'</span>),</span><br><span class="line">        v2_Array = <span class="built_in">String</span>(v2).split(<span class="string">'.'</span>),</span><br><span class="line">        len = <span class="built_in">Math</span>.max(v1_Array.length, v2_Array.length);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">        <span class="keyword">var</span> _v1 =  <span class="built_in">parseInt</span>(v1_Array[i]) || <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">var</span> _v2 = <span class="built_in">parseInt</span>(v2_Array[i]) || <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span>(_v1 &lt; _v2) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(_v1 &gt; _v2) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(versionCompare(<span class="string">'1.1.5'</span>,<span class="string">'1.3.3'</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="2-递归循环数组"><a href="#2-递归循环数组" class="headerlink" title="2. 递归循环数组"></a>2. 递归循环数组</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 递归循环修改字段 </span></span><br><span class="line"><span class="comment">    * tree Array</span></span><br><span class="line"><span class="comment">    **/</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">treeData</span>(<span class="params">tree = []</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">if</span>(tree.length &lt;= <span class="number">0</span>) <span class="keyword">return</span>;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; tree.length; i++) &#123;</span><br><span class="line">        <span class="keyword">let</span> iterm = tree[i];</span><br><span class="line">        iterm[<span class="string">"lable"</span>] = iterm[<span class="string">"text"</span>];</span><br><span class="line">        iterm[<span class="string">"value"</span>] = iterm[<span class="string">"id"</span>];</span><br><span class="line">        iterm[<span class="string">"key"</span>] = iterm[<span class="string">"id"</span>];</span><br><span class="line">        <span class="keyword">delete</span>(iterm[<span class="string">"text"</span>]);</span><br><span class="line">        <span class="keyword">delete</span>(iterm[<span class="string">"id"</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(iterm.children)&#123;</span><br><span class="line">           treeData(iterm.children)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> tree;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">const</span> treeData = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">"id"</span>:<span class="number">5895</span>,</span><br><span class="line">        <span class="string">"text"</span>:<span class="string">"店铺主数据系统"</span>,</span><br><span class="line">        <span class="string">"state"</span>:<span class="string">"open"</span>,</span><br><span class="line">        <span class="string">"children"</span>:[</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">"id"</span>:<span class="number">5894</span>,</span><br><span class="line">                <span class="string">"text"</span>:<span class="string">"精品订单管理"</span>,</span><br><span class="line">                <span class="string">"state"</span>:<span class="string">"closed"</span>,</span><br><span class="line">                <span class="string">"children"</span>:[</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="string">"id"</span>:<span class="number">5901</span>,</span><br><span class="line">                        <span class="string">"text"</span>:<span class="string">"精品取消审核管理"</span>,</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="string">"id"</span>:<span class="number">5902</span>,</span><br><span class="line">                        <span class="string">"text"</span>:<span class="string">"精品退换货审核"</span>,</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="string">"id"</span>:<span class="number">5903</span>,</span><br><span class="line">                        <span class="string">"text"</span>:<span class="string">"精品退款确认"</span>,</span><br><span class="line">                    &#125;,</span><br><span class="line">                ]            </span><br><span class="line">              &#125;            </span><br><span class="line">        ],</span><br><span class="line">      &#125;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<h3 id="3-bind-实现原理"><a href="#3-bind-实现原理" class="headerlink" title="3. bind 实现原理"></a>3. bind 实现原理</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.bind = <span class="function"><span class="keyword">function</span>(<span class="params">ctx</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> self = <span class="keyword">this</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        self.apply(ctx,<span class="built_in">arguments</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
     </div>
   </div>
   
@@ -238,7 +228,7 @@
         
           本文作者 : Healer <br>
         
-        原文链接 : <a href="">https://say-healer.github.io/2019/01/09/animation/</a><br>
+        原文链接 : <a href="">https://say-healer.github.io/2019/01/08/javascript-algorithm/</a><br>
         版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
         </blockquote>
       </div>
@@ -295,6 +285,15 @@
     <div class="article-meta pull-left">
       <span>
         
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/JavaScript/">
+              #JavaScript
+            </a>
+          </span>
+          
+        
       </span>
     </div>
     <div class="article-meta pull-right">
@@ -312,16 +311,10 @@
 
   <nav class="post-navigation">
     
-      <div class="nav-pre">
-        <i class="iconfont icon-prev"></i>
-        上一篇:
-        <a href="/2019/01/08/javascript-algorithm/" target="_self">常见的js算法</a>
-      </div>
-    
     
       <div class="nav-next">
         下一篇:
-        <a href="/2019/01/16/array-all/" target="_self">Array用法大全</a>
+        <a href="/2019/01/09/animation/" target="_self">animation</a>
         <i class="iconfont icon-next"></i>
       </div>
     

@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
+  
+  
+  
+  <title>小程序中完美分享封面图的解决方案 | Healer</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Hexo, theme-bmw, Healer">
+  
+
+ 
+
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">blogxin.xin</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a href="/" target="_self">
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a href="/archives/" target="_self">
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a href="/categories/" target="_self">
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a href="/tags/" target="_self">
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          
+            <a href="/friends/" target="_self">
+              友链
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a href="/about/" target="_self">
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else="">关于我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a href="https://github.com/Say-healer" target="_blank">
+                    Github
+                  </a>
+                </li>
+              
+                <li>
+                  <a href="https://www.zhihu.com/people/godbmw/activities" target="_blank">
+                    知乎
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>小程序中完美分享封面图的解决方案</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-07-08
+    </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="applet-cover"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <p>在小程序中，有很多地方用到分享功能，那分享默认从手机屏幕上从上到下截取一张5:4的图片，来分享，不是很美观，如果是自定义的图片，那么就必须规定好是一张5:4 的图，在很多作品中，不能达到统一，为此来封装个组件，来解决此问题。</p>
+<h2 id="1-创建canvas-画布"><a href="#1-创建canvas-画布" class="headerlink" title="1. 创建canvas 画布"></a>1. 创建canvas 画布</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">canvas</span> <span class="attr">canvas-id</span>=<span class="string">"share-canvas"</span> <span class="attr">style</span>=<span class="string">"&#123;&#123;canvasStyle&#125;&#125;&#123;&#123;customStyle&#125;&#125;"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-设计暴露方法与参数"><a href="#2-设计暴露方法与参数" class="headerlink" title="2. 设计暴露方法与参数"></a>2. 设计暴露方法与参数</h2><h3 id="properties"><a href="#properties" class="headerlink" title="* properties"></a>* properties</h3><p>根据需求来做的话，可以设计如下参数和方法，multiple根据这个可以调节图片的清晰度，isOpenLoad 可以防止回调没有执行完就分享了。</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+<th>类型</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>customStyle</td>
+<td>自定义样式</td>
+<td>String</td>
+<td>-</td>
+</tr>
+<tr>
+<td>url</td>
+<td>图片路径</td>
+<td>String</td>
+<td>-</td>
+</tr>
+<tr>
+<td>multiple</td>
+<td>倍数，默认1，宽高为500/400</td>
+<td>String</td>
+<td>-</td>
+</tr>
+<tr>
+<td>isOpenLoad</td>
+<td>开启 loading</td>
+<td>Boolean</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+<h3 id="event"><a href="#event" class="headerlink" title="event"></a>event</h3><table>
+<thead>
+<tr>
+<th>事件名</th>
+<th>说明</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bind:onToSuccessImg</td>
+<td>图片绘制成功</td>
+<td>e:{detal}</td>
+</tr>
+<tr>
+<td>bind:onToErrorImg</td>
+<td>图片绘制失败</td>
+<td>e:{detal}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-获取图片信息"><a href="#3-获取图片信息" class="headerlink" title="3. 获取图片信息"></a>3. 获取图片信息</h2><p>为了保证能加载获取所有的图片，特别是网络图片，可调用<code>wx.getImageInfo</code>，返回临时路径和长宽信息。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 获取图片信息，转成本地图片</span></span><br><span class="line"><span class="comment">    * @param &#123;*&#125; url </span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    drawGetImageInfo(url) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!url) &#123;</span><br><span class="line">          <span class="keyword">return</span> resolve(<span class="literal">false</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        wx.getImageInfo(&#123;</span><br><span class="line">          src: url,</span><br><span class="line">          success: <span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">            resolve(&#123;</span><br><span class="line">              src: res.path,</span><br><span class="line">              width: res.width,</span><br><span class="line">              height: res.height</span><br><span class="line">            &#125;)</span><br><span class="line">          &#125;,</span><br><span class="line">          fail: <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            reject()</span><br><span class="line">          &#125;,</span><br><span class="line">          complete: <span class="function"><span class="params">()</span> =&gt;</span> &#123; &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-渲染画布"><a href="#4-渲染画布" class="headerlink" title="4. 渲染画布"></a>4. 渲染画布</h2><p>为了能够美观，假设最终导出的图以500:400 为基准，那原图分三种情况，</p>
+<ol>
+<li>等于5:4</li>
+<li>大于5:4</li>
+<li>小于5:4</li>
+</ol>
+<p>分别针对三种情况来写的话如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">drawImg(opt) &#123;</span><br><span class="line">      <span class="keyword">let</span> &#123; src, width, height &#125; = opt,</span><br><span class="line">        &#123; export_width, export_height &#125; = <span class="keyword">this</span>.data,</span><br><span class="line">        dWidth, dHight,</span><br><span class="line">        s_radio = width / height,</span><br><span class="line">        e_radio = export_width / export_height,</span><br><span class="line">        x = <span class="number">0</span>, y = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (s_radio == e_radio) &#123;</span><br><span class="line">        <span class="comment">// 5/4</span></span><br><span class="line">        dWidth = export_width</span><br><span class="line">        dHight = export_height</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (s_radio &gt; e_radio) &#123;</span><br><span class="line">        <span class="comment">// 大于 5/4</span></span><br><span class="line">        dWidth = export_width</span><br><span class="line">        dHight = dWidth / s_radio</span><br><span class="line">        y = (export_height - dHight) / <span class="number">2</span></span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 小于 5/4</span></span><br><span class="line">        dHight = export_height</span><br><span class="line">        dWidth = dHight * s_radio</span><br><span class="line">        x = (export_width - dWidth) / <span class="number">2</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">this</span>.ctx = wx.createCanvasContext(<span class="string">'share-canvas'</span>, <span class="keyword">this</span>)</span><br><span class="line">      <span class="keyword">this</span>.ctx.setFillStyle(<span class="string">'#fff'</span>)</span><br><span class="line">      <span class="keyword">this</span>.ctx.fillRect(<span class="number">0</span>, <span class="number">0</span>, export_width, export_height)</span><br><span class="line">      <span class="keyword">this</span>.ctx.restore()</span><br><span class="line">      <span class="keyword">this</span>.ctx.drawImage(src, x, y, dWidth, dHight)</span><br><span class="line">      <span class="keyword">this</span>.ctx.draw(<span class="literal">false</span>, () =&gt; &#123;</span><br><span class="line">        setTimeout(<span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">          <span class="keyword">this</span>.canvasToFile()</span><br><span class="line">        &#125;,<span class="number">300</span>)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这里，画布先用白色填充，防止出现黑色底边，<code>drawImage</code>方法具体参数如下</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>img</td>
+<td>规定要使用的图像、画布或视频</td>
+</tr>
+<tr>
+<td>sx</td>
+<td>可选。开始剪切图片的 x 坐标位置</td>
+</tr>
+<tr>
+<td>sy</td>
+<td>可选。开始剪切图片的 y 坐标位置</td>
+</tr>
+<tr>
+<td>sw</td>
+<td>可选。被剪切图像的宽度（就是裁剪之前的图片宽度，这里的宽度若小于图片的原宽。则图片多余部分被剪掉；若大于，则会以空白填充）</td>
+</tr>
+<tr>
+<td>sh</td>
+<td>可选。被剪切图像的高度（就是裁剪之前的图片高度）</td>
+</tr>
+<tr>
+<td>dx</td>
+<td>在画布上放置图像的 x 坐标位置</td>
+</tr>
+<tr>
+<td>dy</td>
+<td>在画布上放置图像的 y 坐标位置</td>
+</tr>
+<tr>
+<td>dw</td>
+<td>可选。要使用的图像的宽度（就是裁剪之后的图片高度，放大或者缩放）</td>
+</tr>
+<tr>
+<td>dh</td>
+<td>可选。要使用的图像的高度（就是裁剪之后的图片高度，放大或者缩放）</td>
+</tr>
+</tbody>
+</table>
+<p>其中，有三种写法，</p>
+<blockquote>
+<ul>
+<li>ctx.drawImage(img) // 直接在(0,0) 以图片的宽高画，如果超出canvas 的宽高则隐藏</li>
+<li>ctx.drawImage(img, dx, dy, dw, dh) //  在画布指定位置上按原图大小绘制指定大小的图(可缩放)</li>
+<li>drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh) // 所有参数</li>
+</ul>
+</blockquote>
+<img src="/images/applet/drawImage.png" class="imgs" title="tupian">
+<h2 id="5-导入图片路径"><a href="#5-导入图片路径" class="headerlink" title="5. 导入图片路径"></a>5. 导入图片路径</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 导出图片路径</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    canvasToFile() &#123;</span><br><span class="line">      <span class="keyword">let</span> &#123; export_width, export_height,isOpenLoad &#125; = <span class="keyword">this</span>.data;</span><br><span class="line">      wx.canvasToTempFilePath(&#123;</span><br><span class="line">        x: <span class="number">0</span>,</span><br><span class="line">        y: <span class="number">0</span>,</span><br><span class="line">        width: export_width,</span><br><span class="line">        height: export_height,</span><br><span class="line">        fileType: <span class="string">'jpg'</span>,</span><br><span class="line">        canvasId: <span class="string">'share-canvas'</span>,</span><br><span class="line">        success: <span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">          isOpenLoad &amp;&amp; wx.hideLoading();</span><br><span class="line">          <span class="keyword">this</span>.triggerEvent(<span class="string">'onToSuccessImg'</span>, res.tempFilePath)</span><br><span class="line"></span><br><span class="line">        &#125;,</span><br><span class="line">        fail: <span class="function"><span class="keyword">function</span> (<span class="params">error</span>) </span>&#123;</span><br><span class="line">          isOpenLoad &amp;&amp; wx.hideLoading();</span><br><span class="line">          <span class="keyword">this</span>.triggerEvent(<span class="string">'onToErrorImg'</span>, error)</span><br><span class="line">          <span class="built_in">console</span>.error(<span class="string">`canvasToTempFilePath failed, <span class="subst">$&#123;<span class="built_in">JSON</span>.stringify(error)&#125;</span>`</span>);</span><br><span class="line">        &#125;,</span><br><span class="line">      &#125;, <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="6-使用方式"><a href="#6-使用方式" class="headerlink" title="6. 使用方式"></a>6. 使用方式</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">"usingComponents":&#123;</span><br><span class="line">   "eqx-share-img":"../../dist/share-img/index"</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">share-img</span> </span></span><br><span class="line"><span class="tag"><span class="attr">customStyle</span>=<span class="string">'position:abslute;top:-9999px;left:-9999px'</span> </span></span><br><span class="line"><span class="tag"><span class="attr">multiple</span>=<span class="string">'1'</span> </span></span><br><span class="line"><span class="tag"><span class="attr">url</span>=<span class="string">''</span></span></span><br><span class="line"><span class="tag"><span class="attr">bind:onToSuccessImg</span>=<span class="string">"onImgOK"</span></span></span><br><span class="line"><span class="tag"><span class="attr">bind:onToErrorImg</span>=<span class="string">"onImgError"</span></span></span><br><span class="line"><span class="tag"> /&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">onImgOK(e)&#123;</span><br><span class="line">  <span class="keyword">this</span>.imagePath = e.detail;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="7-全部代码"><a href="#7-全部代码" class="headerlink" title="7. 全部代码"></a>7. 全部代码</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 图片自动校验为5/4 图片</span></span><br><span class="line"></span><br><span class="line">Component(&#123;</span><br><span class="line">  properties: &#123;</span><br><span class="line">    customStyle: &#123;</span><br><span class="line">      type: <span class="built_in">String</span>,</span><br><span class="line">      value: <span class="string">''</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    url: &#123;</span><br><span class="line">      type: <span class="built_in">String</span>,</span><br><span class="line">      value: <span class="string">''</span>,</span><br><span class="line">      observer: <span class="function"><span class="keyword">function</span> (<span class="params">newVal,oldVal</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (newVal &amp;&amp; oldVal != newVal) &#123;</span><br><span class="line">          <span class="keyword">this</span>._handleImg(newVal)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 倍数</span></span><br><span class="line">    multiple: &#123;</span><br><span class="line">      type: <span class="built_in">Number</span>,</span><br><span class="line">      value: <span class="number">1</span>,</span><br><span class="line">      observer: <span class="function"><span class="keyword">function</span> (<span class="params">newVal</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (newVal) &#123;</span><br><span class="line">          <span class="keyword">if</span> (<span class="number">1</span> !== newVal) &#123;</span><br><span class="line">            <span class="keyword">const</span> &#123; export_width, export_height &#125; = <span class="keyword">this</span>.data;</span><br><span class="line">            <span class="keyword">this</span>.data.export_width = export_width * newVal</span><br><span class="line">            <span class="keyword">this</span>.data.export_height = export_height * newVal</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 是否开启 loading</span></span><br><span class="line">    isOpenLoad:&#123;</span><br><span class="line">      type:<span class="built_in">Boolean</span>,</span><br><span class="line">      value:<span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  &#125;,</span><br><span class="line">  data: &#123;</span><br><span class="line">    export_width: <span class="number">500</span>,</span><br><span class="line">    export_height: <span class="number">400</span>,</span><br><span class="line">    canvasStyle: <span class="string">''</span></span><br><span class="line"></span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 获取图片信息，转成本地图片</span></span><br><span class="line"><span class="comment">    * @param &#123;*&#125; url </span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    drawGetImageInfo(url) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!url) &#123;</span><br><span class="line">          <span class="keyword">return</span> resolve(<span class="literal">false</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        wx.getImageInfo(&#123;</span><br><span class="line">          src: url,</span><br><span class="line">          success: <span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">            resolve(&#123;</span><br><span class="line">              src: res.path,</span><br><span class="line">              width: res.width,</span><br><span class="line">              height: res.height</span><br><span class="line">            &#125;)</span><br><span class="line">          &#125;,</span><br><span class="line">          fail: <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            reject()</span><br><span class="line">          &#125;,</span><br><span class="line">          complete: <span class="function"><span class="params">()</span> =&gt;</span> &#123; &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    _handleImg(src) &#123;</span><br><span class="line">      </span><br><span class="line">        </span><br><span class="line">      <span class="keyword">const</span> &#123; export_width, export_height ,isOpenLoad &#125; = <span class="keyword">this</span>.data;</span><br><span class="line">      isOpenLoad &amp;&amp; wx.showLoading(&#123;<span class="attr">title</span>: <span class="string">'加载中...'</span>,<span class="attr">mask</span>: <span class="literal">true</span>, &#125;);</span><br><span class="line">      <span class="keyword">this</span>.setData(&#123;</span><br><span class="line">        canvasStyle: <span class="string">`width:<span class="subst">$&#123;export_width&#125;</span>px;height:<span class="subst">$&#123;export_height&#125;</span>px;`</span></span><br><span class="line">      &#125;)</span><br><span class="line">      <span class="built_in">console</span>.info(<span class="string">`%c canvas widht:<span class="subst">$&#123;export_width&#125;</span>,height:<span class="subst">$&#123;export_height&#125;</span>`</span>, <span class="string">"color:green"</span>)</span><br><span class="line">      <span class="keyword">this</span>.drawGetImageInfo(src).then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.info(<span class="string">`%c image info:<span class="subst">$&#123;<span class="built_in">JSON</span>.stringify(res)&#125;</span>`</span>, <span class="string">"color:green"</span>)</span><br><span class="line">        <span class="keyword">this</span>.drawImg(res)</span><br><span class="line"></span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    drawImg(opt) &#123;</span><br><span class="line">      <span class="keyword">let</span> &#123; src, width, height &#125; = opt,</span><br><span class="line">        &#123; export_width, export_height &#125; = <span class="keyword">this</span>.data,</span><br><span class="line">        dWidth, dHight,</span><br><span class="line">        s_radio = width / height,</span><br><span class="line">        e_radio = export_width / export_height,</span><br><span class="line">        x = <span class="number">0</span>, y = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// radio &gt; 1 </span></span><br><span class="line">      <span class="keyword">if</span> (s_radio == e_radio) &#123;</span><br><span class="line">        <span class="comment">// 5/4</span></span><br><span class="line">        dWidth = export_width</span><br><span class="line">        dHight = export_height</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (s_radio &gt; e_radio) &#123;</span><br><span class="line">        <span class="comment">// 大于 5/4</span></span><br><span class="line">        dWidth = export_width</span><br><span class="line">        dHight = dWidth / s_radio</span><br><span class="line">        y = (export_height - dHight) / <span class="number">2</span></span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 小于 5/4</span></span><br><span class="line">        dHight = export_height</span><br><span class="line">        dWidth = dHight * s_radio</span><br><span class="line">        x = (export_width - dWidth) / <span class="number">2</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">this</span>.ctx = wx.createCanvasContext(<span class="string">'share-canvas'</span>, <span class="keyword">this</span>)</span><br><span class="line">      <span class="keyword">this</span>.ctx.setFillStyle(<span class="string">'#fff'</span>)</span><br><span class="line">      <span class="keyword">this</span>.ctx.fillRect(<span class="number">0</span>, <span class="number">0</span>, export_width, export_height)</span><br><span class="line">      <span class="keyword">this</span>.ctx.restore()</span><br><span class="line">      <span class="keyword">this</span>.ctx.drawImage(src, x, y, dWidth, dHight)</span><br><span class="line">      <span class="keyword">this</span>.ctx.draw(<span class="literal">false</span>, () =&gt; &#123;</span><br><span class="line">        setTimeout(<span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">          <span class="keyword">this</span>.canvasToFile()</span><br><span class="line">        &#125;,<span class="number">300</span>)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 导出图片路径</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    canvasToFile() &#123;</span><br><span class="line">      <span class="keyword">let</span> &#123; export_width, export_height,isOpenLoad &#125; = <span class="keyword">this</span>.data;</span><br><span class="line">      wx.canvasToTempFilePath(&#123;</span><br><span class="line">        x: <span class="number">0</span>,</span><br><span class="line">        y: <span class="number">0</span>,</span><br><span class="line">        width: export_width,</span><br><span class="line">        height: export_height,</span><br><span class="line">        fileType: <span class="string">'jpg'</span>,</span><br><span class="line">        canvasId: <span class="string">'share-canvas'</span>,</span><br><span class="line">        success: <span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">          isOpenLoad &amp;&amp; wx.hideLoading();</span><br><span class="line">          <span class="keyword">this</span>.triggerEvent(<span class="string">'onToSuccessImg'</span>, res.tempFilePath)</span><br><span class="line"></span><br><span class="line">        &#125;,</span><br><span class="line">        fail: <span class="function"><span class="keyword">function</span> (<span class="params">error</span>) </span>&#123;</span><br><span class="line">          isOpenLoad &amp;&amp; wx.hideLoading();</span><br><span class="line">          <span class="keyword">this</span>.triggerEvent(<span class="string">'onToErrorImg'</span>, error)</span><br><span class="line">          <span class="built_in">console</span>.error(<span class="string">`canvasToTempFilePath failed, <span class="subst">$&#123;<span class="built_in">JSON</span>.stringify(error)&#125;</span>`</span>);</span><br><span class="line">        &#125;,</span><br><span class="line">      &#125;, <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Healer <br>
+        
+        原文链接 : <a href="">https://say-healer.github.io/2019/07/08/applet-cover/</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+    <div class="social-share" style="margin-top: -2rem" data-wechat-qrcode-title="<p>微信扫一扫</p>" data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>" data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter">
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async></script>
+  
+
+  
+    <div id="reward">
+  
+    <p id="reward-meta">知识 & 情怀 | 二者兼得</p>
+  
+  <button id="reward-btn">
+    
+    <span>投食</span>
+  </button>
+  <div id="reward-qrcode">
+    
+      <div class="reward-qrcode--container">
+        <img class="qrcode-img" src="/images/wechat.png" alt="微信扫一扫, 向我投食">
+        <p class="qrcode-meta">微信扫一扫, 向我投食</p>
+      </div>
+    
+      <div class="reward-qrcode--container">
+        <img class="qrcode-img" src="/images/alipay.png" alt="支付宝扫一扫, 向我投食">
+        <p class="qrcode-meta">支付宝扫一扫, 向我投食</p>
+      </div>
+    
+  </div>
+
+</div>
+
+<script>
+  (() => {
+    let button = document.querySelector('#reward-btn'),
+      qrcode = document.querySelector('#reward-qrcode'),
+      display = false;
+    
+    button.addEventListener('click', () => {
+      qrcode.style.display = display ? 'none' : 'block'
+      display = !display
+    }, false)
+  })()
+</script>
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/2019/06/21/applet-icon/" target="_self">在小程序中使用icon图标</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/2019/09/02/ngrok/" target="_self">手把手教你搭建ngrok服务－轻松外网调试本机站点</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+  
+    <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "cxCXqGhylt0yfVMupma4rarl-gzGzoHsz",
+      appKey: "6TYnANnS6Eq0u1bPHaslvaLu",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("cxCXqGhylt0yfVMupma4rarl-gzGzoHsz", "6TYnANnS6Eq0u1bPHaslvaLu");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已经稳定运行<span id="time-to-now"></span><span class="my-face"></span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2019, 0, 7).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+      
+         
+          <script src="/custom/script.js"  async  ></script>
+        
+      
+    
+  </body>
+
+</html>
