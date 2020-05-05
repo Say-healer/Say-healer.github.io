@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
+  
+  
+  
+  <title>webpack基础知识（一） | Healer</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="webpack,">
+  
+
+ 
+
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">blogxin.xin</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a href="/" target="_self">
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a href="/archives/" target="_self">
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a href="/categories/" target="_self">
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a href="/tags/" target="_self">
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          
+            <a href="/friends/" target="_self">
+              友链
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a href="/about/" target="_self">
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else="">关于我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a href="https://github.com/Say-healer" target="_blank">
+                    Github
+                  </a>
+                </li>
+              
+                <li>
+                  <a href="https://www.zhihu.com/people/Say_8586" target="_blank">
+                    知乎
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>webpack基础知识（一）</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2020-05-04
+    </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="webpack"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <h1 id="webpack-学习"><a href="#webpack-学习" class="headerlink" title="webpack 学习"></a>webpack 学习</h1><h2 id="1、常见-plugins"><a href="#1、常见-plugins" class="headerlink" title="1、常见 plugins"></a>1、常见 plugins</h2><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CommonsChunkPlugin</td>
+<td>将 chunks 相同的模块代码提取公共 js</td>
+</tr>
+<tr>
+<td>CleanWebpackPlugin</td>
+<td>清理构建目录</td>
+</tr>
+<tr>
+<td>ExtratTextWebpackPlugin</td>
+<td>将 css 从 bunlde 文件里提取成为一个独立的 css 文件</td>
+</tr>
+<tr>
+<td>CopyWebpackPlugin</td>
+<td>将文件或者文件夹拷贝到构建的输出目录</td>
+</tr>
+<tr>
+<td>HtmlWebpackPlugin</td>
+<td>创建 html 文件去承载输出的 bundle</td>
+</tr>
+<tr>
+<td>UglifyjsWebpackPlugin</td>
+<td>压缩 Js</td>
+</tr>
+<tr>
+<td>ZipWebpackPlugin</td>
+<td>讲打包出的资源生成一个 zip 包</td>
+</tr>
+</tbody>
+</table>
+<p>核心概念之 Mode</p>
+<p>Mode 用来指当前的构建环境是：<code>production</code>、<code>development</code>、<code>none</code>,设置 mode 可以使用 webpack 内置的函数，默认值为<code>production</code>。<br>其中具体的功能如下</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>development</td>
+<td>设置 process.env.NODE_ENV 的值为 <code>development</code>,开启<code>NamedChunksPlugin</code> 和 <code>NamedModulesPlugin</code></td>
+</tr>
+<tr>
+<td>production</td>
+<td>设置 process.env.NODE_NEV 的值 为 <code>production</code>，开启<code>FlagDependencyUsagePlugin</code>,<code>FlagIncludeChunksPlugin</code>， <code>ModuleConcatenationsPlugin</code>,<code>NoEmitOnErrorsPlugin</code>,<code>OccurrenceOrderPlugin</code>，<code>SideEffectsFlagPlugin</code>和<code>TerserPlugin</code>.</td>
+</tr>
+<tr>
+<td>none</td>
+<td>不开启任何优化选项</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2、解析-Es6-和-React-JSX"><a href="#2、解析-Es6-和-React-JSX" class="headerlink" title="2、解析 Es6 和 React JSX"></a>2、解析 Es6 和 React JSX</h2><p>首先安装插件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">npm i @babel/core @babel/preset-env babel-loader -D</span><br></pre></td></tr></table></figure>
+<p>在根目录创建<code>.babelrc</code>文件并输入</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"presets"</span>: [</span><br><span class="line">    <span class="string">"@babel/preset-env"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同时需要在 webpack 文件 module 中增加 rules</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">rules: [</span><br><span class="line">	&#123;</span><br><span class="line">		test: <span class="regexp">/\.js$/</span>,</span><br><span class="line">		use: <span class="string">'babel-loader'</span>,</span><br><span class="line">	&#125;,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>如果要解析 React JSX 需要安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i react react-dom @babel/preset-react -D</span><br></pre></td></tr></table></figure>
+<p>在<code>.babelrc</code>文件中追加 react babel 解析</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"presets"</span>: [</span><br><span class="line">    <span class="string">"@babel/preset-env"</span>,</span><br><span class="line">    <span class="string">"@babel/preset-react"</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="string">"plugins"</span>: [</span><br><span class="line">    <span class="string">"@babel/proposal-class-properties"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3、rules-解析配置"><a href="#3、rules-解析配置" class="headerlink" title="3、rules 解析配置"></a>3、rules 解析配置</h2><h3 id="解析-Css、Less、Sass"><a href="#解析-Css、Less、Sass" class="headerlink" title="解析 Css、Less、Sass"></a>解析 Css、Less、Sass</h3><p>在 webpack 中解析 css 可以用<code>css-loader</code>加载.css 文件，并且转换成 commonjs 对象<code>style-loader</code>讲样式通过<code>&lt;style&gt;</code>标签插入到 heade 中<br>在 module 中添加如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">rules: [</span><br><span class="line">	&#123;</span><br><span class="line">		test: <span class="regexp">/\.css$/</span>,</span><br><span class="line">		use: [<span class="string">'style-loader'</span>, <span class="string">'css-loader'</span>],</span><br><span class="line">	&#125;,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>解析 less 只需要在解析 css 的基础上增加 use 中添加 less-loader</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i less less-loader -D</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">rules: [</span><br><span class="line">	&#123;</span><br><span class="line">		test: <span class="regexp">/\.less$/</span>,</span><br><span class="line">		use: [<span class="string">'style-loader'</span>, <span class="string">'css-loader'</span>, <span class="string">'less-loader'</span>],</span><br><span class="line">	&#125;,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>这里值得一说的是 loader 链式调用的顺序是从右到左 比如如上的例子解析顺序是<code>less-loader</code>&gt; <code>css-loader</code> &gt; <code>style-loader</code></p>
+<h3 id="解析图片"><a href="#解析图片" class="headerlink" title="解析图片"></a>解析图片</h3><p>解析图片可以使用<code>file-loader</code>在 rules 数组中添加如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  test:<span class="regexp">/\.(png|jpg|gif|jpeg)$/</span>,</span><br><span class="line">  use:<span class="string">'file-loader'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="解析字体"><a href="#解析字体" class="headerlink" title="解析字体"></a>解析字体</h3><p>解析字体也是使用<code>file-loader</code>,修改 test 就可以了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  test:<span class="regexp">/\.(woff|woff2|ttf|otf)$/</span>,</span><br><span class="line">  use:<span class="string">'file-loader'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然除了使用<code>file-loader</code>还可以使用<code>url-loader</code>,它可以设置较小的资源自动 base64，具体配置如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  test:<span class="regexp">/\.(woff|woff2|ttf|otf)$/</span>,</span><br><span class="line">  use:[</span><br><span class="line">    &#123;</span><br><span class="line">    loader:<span class="string">'url-loader'</span>,</span><br><span class="line">     option:&#123;</span><br><span class="line">      limit: <span class="number">10240</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ],</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4、文件监听"><a href="#4、文件监听" class="headerlink" title="4、文件监听"></a>4、文件监听</h2><p>文件监听是在开发中必不可少的，大大的提升了工作效率，自动重新构建出新的输出文件。<br>webpack 开启监听模式有两种方式：</p>
+<ul>
+<li>启动 webpack 命令时，带上 <code>--watch</code>参数</li>
+<li>在配置 webpack.config.js 中设置<code>watch: true</code></li>
+</ul>
+<p>第一种方法可以自动改变，但是浏览器需要手动刷新<br>第二种具体配置如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.export = &#123;</span><br><span class="line">	watch: <span class="literal">true</span>,</span><br><span class="line">	watchOptions: &#123;</span><br><span class="line">		<span class="comment">// 忽略的文件</span></span><br><span class="line">		ignored: <span class="regexp">/node_modules/</span>,</span><br><span class="line">		<span class="comment">// 监听延迟 这里300ms 才去执行</span></span><br><span class="line">		aggregateTimeout: <span class="number">300</span>,</span><br><span class="line">		<span class="comment">// 这里每秒检查一次</span></span><br><span class="line">		poll: <span class="number">1000</span>,</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>当然上面的方法有缺陷，不能自动打开，可以使用<code>webpack-dev-server</code>配合<code>webpack.HotMOduleReplacementPlugin</code></p>
+<p>现在<code>package.json</code>中的 script 中添加如下</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// ...</span><br><span class="line">"script": &#123;</span><br><span class="line">  "dev": "webpack-dev-server --open"</span><br><span class="line">&#125;</span><br><span class="line">// ...</span><br></pre></td></tr></table></figure>
+<p>同时需要在 webpack.config.js 中添加如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.export = &#123;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	mode: <span class="string">'development'</span>,</span><br><span class="line">	plugins: [<span class="keyword">new</span> webpack.HotMOduleReplacementPlugin()],</span><br><span class="line">	devServer: &#123;</span><br><span class="line">		contentBase: <span class="string">'./dist'</span>,</span><br><span class="line">		hot: <span class="literal">true</span>,</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="5、文件指纹策略"><a href="#5、文件指纹策略" class="headerlink" title="5、文件指纹策略"></a>5、文件指纹策略</h2><p>文件指纹如何生成</p>
+<ul>
+<li>hash：和整个项目的构建相关，只要项目文件有修改，整个项目构建的 hash 值就会改变</li>
+<li>Chunkhash：和 webpack 打包 chunk 有关，不同的 entry 会生成不同的 chunkhash 值</li>
+<li>Contenthash：根据文件内容来定义 hash，文件内容不变，则 contenthash 不变</li>
+</ul>
+<h2 id="6、代码压缩"><a href="#6、代码压缩" class="headerlink" title="6、代码压缩"></a>6、代码压缩</h2><ul>
+<li>js 压缩<br>webpack4 中内置了 <code>uglifyjs-webpack-plugin</code>,</li>
+<li><p>css 压缩<br>使用<code>optimize-css-assets-webpack-plugin</code>,同时使用<code>cssnano</code>，</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">plugins:[</span><br><span class="line">  <span class="keyword">new</span> OptimizeCssAssetsPlugin(&#123;</span><br><span class="line">    assetNameRegExp:<span class="regexp">/\.css$/g</span>,</span><br><span class="line">    cssProcessor:<span class="built_in">require</span>(<span class="string">'cssnano)</span></span><br><span class="line"><span class="string">  &#125;)</span></span><br><span class="line"><span class="string">]</span></span><br></pre></td></tr></table></figure>
+<p>至于提取 css 文件可以使用<a href="https://webpack.js.org/plugins/mini-css-extract-plugin/" target="_blank" rel="noopener">mini-css-extract-plugin</a>,</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">	plugins: [<span class="keyword">new</span> MiniCssExtractPlugin()],</span><br><span class="line">	<span class="built_in">module</span>: &#123;</span><br><span class="line">		rules: [</span><br><span class="line">			&#123;</span><br><span class="line">				test: <span class="regexp">/\.css\$/i</span>,</span><br><span class="line">				use: [MiniCssExtractPlugin.loader, <span class="string">'css-loader'</span>],</span><br><span class="line">			&#125;,</span><br><span class="line">		],</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>html 压缩<br>使用 <a href="https://github.com/jantimon/html-webpack-plugin" target="_blank" rel="noopener">html-webpack-plugin</a></p>
+</li>
+</ul>
+<h2 id="6、自动清理目录"><a href="#6、自动清理目录" class="headerlink" title="6、自动清理目录"></a>6、自动清理目录</h2><p>使用<a href="https://github.com/johnagan/clean-webpack-plugin" target="_blank" rel="noopener">clean-webpack-plugin</a>,可以很简单的做到清理目录</p>
+<h2 id="7、postCss-插件自动补齐-css3-前缀"><a href="#7、postCss-插件自动补齐-css3-前缀" class="headerlink" title="7、postCss 插件自动补齐 css3 前缀"></a>7、postCss 插件自动补齐 css3 前缀</h2><p>有很多不同的浏览器可能需要添加不同 css 前缀如<code>-webkit-border-radius</code>,这里可以配合使用<a href="https://github.com/postcss/postcss-loader" target="_blank" rel="noopener">postcss-loader</a>和<a href="https://github.com/postcss/autoprefixer" target="_blank" rel="noopener">autoprefixer</a> 这两个插件完成此任务，其中的规则是根据<a href="https://caniuse.com/" target="_blank" rel="noopener">canIuse</a>生成的，具体的配置如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">	<span class="built_in">module</span>: &#123;</span><br><span class="line">		rules: [</span><br><span class="line">			&#123;</span><br><span class="line">				test: <span class="regexp">/\.less$/</span>,</span><br><span class="line">				use: [</span><br><span class="line">					<span class="string">'css-loader'</span>,</span><br><span class="line">					<span class="string">'less-loader'</span>,</span><br><span class="line">					&#123;</span><br><span class="line">						loader: <span class="string">'postcss-loader'</span>,</span><br><span class="line">						options: &#123;</span><br><span class="line">							plugins: <span class="function"><span class="params">()</span> =&gt;</span> [</span><br><span class="line">								<span class="built_in">require</span>(<span class="string">'autoprefixer'</span>)(&#123;</span><br><span class="line">									browsers: [<span class="string">'last 2 version'</span>, <span class="string">'&gt;1%'</span>, <span class="string">'ios 7'</span>],</span><br><span class="line">								&#125;),</span><br><span class="line">							],</span><br><span class="line">						&#125;,</span><br><span class="line">					&#125;,</span><br><span class="line">				],</span><br><span class="line">			&#125;,</span><br><span class="line">		],</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="8、px-自动转换-rem"><a href="#8、px-自动转换-rem" class="headerlink" title="8、px 自动转换 rem"></a>8、px 自动转换 rem</h2><ul>
+<li>使用<a href="https://github.com/Jinjiang/px2rem-loader" target="_blank" rel="noopener">px2rem-loader</a>进行转换</li>
+<li>使用手淘<a href="https://github.com/amfe/lib-flexible" target="_blank" rel="noopener">lib-flexible</a>来自动计算根元素的<code>font-size</code>值</li>
+</ul>
+<p><code>px2rem-loader</code>具体的配置如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">	<span class="built_in">module</span>: &#123;</span><br><span class="line">		rules: [</span><br><span class="line">			&#123;</span><br><span class="line">				test: <span class="regexp">/\.less$/</span>,</span><br><span class="line">				use: [</span><br><span class="line">					<span class="string">'css-loader'</span>,</span><br><span class="line">					<span class="string">'less-loader'</span>,</span><br><span class="line">					&#123;</span><br><span class="line">						loader: <span class="string">'px2rem-loader'</span>,</span><br><span class="line">						options: &#123;</span><br><span class="line">							<span class="comment">// 这里基准为 750px</span></span><br><span class="line">							remUnit: <span class="number">75</span>,</span><br><span class="line">							<span class="comment">// 保留小数点几位</span></span><br><span class="line">							remPrecision: <span class="number">8</span>,</span><br><span class="line">						&#125;,</span><br><span class="line">					&#125;,</span><br><span class="line">				],</span><br><span class="line">			&#125;,</span><br><span class="line">		],</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Healer <br>
+        
+        原文链接 : <a href="">https://say-healer.github.io/2020/05/04/webpack/</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+    <div class="social-share" style="margin-top: -2rem" data-wechat-qrcode-title="<p>微信扫一扫</p>" data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>" data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter">
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async></script>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/webpack/">
+              #webpack
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/2020/04/25/amd-cmd-commonjs/" target="_self">理解CommonJs、AMD、CMD、ES6模块</a>
+      </div>
+    
+    
+  </nav>
+
+  
+    <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "cxCXqGhylt0yfVMupma4rarl-gzGzoHsz",
+      appKey: "6TYnANnS6Eq0u1bPHaslvaLu",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("cxCXqGhylt0yfVMupma4rarl-gzGzoHsz", "6TYnANnS6Eq0u1bPHaslvaLu");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已经稳定运行<span id="time-to-now"></span><span class="my-face"></span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2019, 0, 7).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+      
+         
+          <script src="/custom/script.js"  async  ></script>
+        
+      
+    
+  </body>
+
+</html>
