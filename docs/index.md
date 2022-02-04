@@ -90,7 +90,7 @@ features: # 可选的
 
 - **WeChat or QQ**: <a href="tencent://message/?uin=894072666&Site=&Menu=yesUrl" class='qq'>1175463710</a>
 - **Email**: <a href="mailto:894072666@qq.com">894072666@qq.com</a>
-- **GitHub**: <https://github.com/eryajf>
+- **GitHub**: <https://github.com/Say-healer>
 
 </br>  -->
 

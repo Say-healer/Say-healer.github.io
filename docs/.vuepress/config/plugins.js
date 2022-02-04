@@ -1,6 +1,6 @@
 const autometa_options = {
   site: {
-    name: 'Eryajf',
+    name: 'Healer',
   },
   canonical_base: 'https://wiki.liunanfang.com',
 };
@@ -60,7 +60,7 @@ module.exports = [
     'umami',
      {
        trackerUrl: 'http://f.eryajf.net',
-       siteId: '360ec71a-d5d6-45d7-8aed-471ebe51a812'
+       siteId: ''
      }
   ],
   // meta优化 https://github.com/webmasterish/vuepress-plugin-autometa
@@ -103,7 +103,7 @@ module.exports = [
   [
     'vuepress-plugin-baidu-tongji',
     {
-      hm: 'b2c6e01d6e80f8edf7e5eeea291eaa53',
+      hm: 'fb95ac24f3d81242b46cbec6cf4af574',
     },
   ],
   // last-reading 插件
@@ -138,9 +138,9 @@ module.exports = [
       options: {
         clientID: 'b4aa5038e85dd667a6cd',
         clientSecret: '2490f479187a09a3655615ca9d9a72f66360b6e1',
-        repo: 'say-healer.github.io', // GitHub 仓库
-        owner: 'say-healer', // GitHub仓库所有者
-        admin: ['say-healer'], // 对仓库有写权限的人
+        repo: 'Say-healer.github.io', // GitHub 仓库
+        owner: 'Say-healer', // GitHub仓库所有者
+        admin: ['Say-healer'], // 对仓库有写权限的人
         // distractionFreeMode: true,
         pagerDirection: 'last', // 'first'正序 | 'last'倒序
         id: '<%- (frontmatter.permalink || frontmatter.to.path).slice(-16) %>', //  页面的唯一标识,长度不能超过50

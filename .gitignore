@@ -4,7 +4,7 @@ node_modules
 report.*
 # yarn
 yarn.lock
-yar-error.log
+yarn-error.log
 # vscode
 .vscode
 
