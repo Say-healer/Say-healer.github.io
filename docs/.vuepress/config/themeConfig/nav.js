@@ -4,6 +4,7 @@ module.exports = [
   { text: '运维',link: '/ops/',
     items: [
       { text: '最佳实践', link: '/pages/d7bc9f/'},
+      { text: 'Nginx', link: '/pages/010201/'},
     ]
   },
   { text: '专题',link: '/topic/',
@@ -23,7 +24,7 @@ module.exports = [
   },
   { text: '周刊', link: '/pages/11c668/',
     items: [
-      { text: '学习周刊', link: '/pages/aa3e00/'},
+      { text: '学习周刊', link: '/pages/weekly-issue-01/'},
     ]
   },
   { text: '关于', link: '/about/' },
