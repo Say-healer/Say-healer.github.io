@@ -48,7 +48,7 @@ module.exports = {
 
   // 博客站点信息（首页）
   blogInfo: {
-    blogCreate: '2018-03-23', // 博客创建时间
+    blogCreate: '2019-03-23', // 博客创建时间
     mdFileCountType: 'archives',  // 开启文档数。1. archives 获取归档的文档数（默认）。2. 数组 readFileList(['xx']) 排除 xx 目录（可多个，可不传参数），获取其他目录的文档数。提示：readFileList() 获取 docs 下所有的 md 文档（除了 `.vuepress` 和 `@pages` 目录下的文档）
     totalWords: 'archives',  // 开启本站文档总字数。1. archives 获取归档的文档数（使用 archives 条件：传入 eachFileWords，否则报错）。2. readTotalFileWords(['xx']) 排除 xx 目录（可多个，可不传参数），获取其他目录的文章字数。无默认值
     eachFileWords: readEachFileWords(),  // 开启每个文章页的字数。readEachFileWords(['xx']) 排除 xx 目录（可多个，可不传参数），获取其他目录的文章字数，无默认值。readEachFileWords() 方法默认排除了 article 为 false 的文章

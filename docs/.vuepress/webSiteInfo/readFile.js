@@ -53,6 +53,7 @@ function readFileList(excludeFiles = [''], dir = docsRoot, filesList = []) {
  */
 function readTotalFileWords(excludeFiles = ['']) {
   const filesList = readFileList(excludeFiles);
+  console.log("filesList",filesList)
   var wordCount = 0;
   filesList.forEach((item) => {
     const content = getContent(item.filePath);
