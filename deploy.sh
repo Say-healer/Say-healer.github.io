@@ -2,7 +2,7 @@
 
 # 确保脚本抛出遇到的错误
 set -e
-
+# npx browserslist@latest --update-db -y
 # 生成静态文件
 npm run build
 
@@ -30,3 +30,4 @@ git init
 git add -A
 git commit -m "${msg}"
 git push -f $githubUrl master:gh-pages # 推送到github gh-pages分支
+#   npx browserslist@latest --update-db
