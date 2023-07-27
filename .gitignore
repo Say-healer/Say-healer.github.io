@@ -3,7 +3,6 @@ package-lock.json
 node_modules
 report.*
 # yarn
-yarn.lock
 yarn-error.log
 # vscode
 .vscode
